@@ -1,0 +1,36 @@
+{
+  "name": "atscribe-ai-resume-analyzer",
+  "version": "1.0.0",
+  "description": "AI-Powered Dual-Mode Resume Analysis & Recruitment Platform",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev-backend": "cd backend && npm run dev",
+    "dev-frontend": "cd frontend && npm start",
+    "dev": "concurrently \"npm run dev-backend\" \"npm run dev-frontend\"",
+    "build-frontend": "cd frontend && npm run build",
+    "start-backend": "cd backend && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nithin-2707/atscribe-ai-resume-analyzer.git"
+  },
+  "keywords": [
+    "resume",
+    "ats",
+    "ai",
+    "gemini",
+    "recruitment",
+    "mern",
+    "react",
+    "nodejs",
+    "mongodb"
+  ],
+  "author": "Nithin",
+  "license": "MIT",
+  "homepage": "https://github.com/nithin-2707/atscribe-ai-resume-analyzer#readme"
+}
