@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FcTodoList, FcIdea, FcBriefcase } from 'react-icons/fc';
+import { FcTodoList, FcIdea } from 'react-icons/fc';
 import { generateAssignments } from '../services/api';
 import Sidebar from '../components/Sidebar';
 import './AssignmentGenerator.css';

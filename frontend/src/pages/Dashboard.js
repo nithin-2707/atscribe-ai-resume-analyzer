@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FcUpload, FcDocument, FcVoicePresentation, FcSearch, FcCalendar, FcHome, FcGraduationCap, FcBusinessman, FcRedo, FcBarChart } from 'react-icons/fc';
+import { FcUpload, FcDocument, FcVoicePresentation, FcSearch, FcCalendar, FcGraduationCap, FcBusinessman, FcRedo, FcBarChart } from 'react-icons/fc';
 import { FaChevronDown } from 'react-icons/fa';
 import { useApp } from '../context/AppContext';
 import { analyzeResume } from '../services/api';
@@ -11,7 +11,7 @@ import './Dashboard.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { sessionId, setSessionId, analysisData, setAnalysisData, userRole, setUserRole, setResumeText, setJobDescription, resetSession } = useApp();
+  const { sessionId, setSessionId, analysisData, setAnalysisData, setUserRole, setJobDescription, resetSession } = useApp();
 
   const [resumeFile, setResumeFile] = useState(null);
   const [jobDesc, setJobDesc] = useState('');

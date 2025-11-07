@@ -30,6 +30,7 @@ const ChatWithResume = () => {
     if (sessionId) {
       loadChatHistory();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId]);
 
   const loadChatHistory = async () => {
