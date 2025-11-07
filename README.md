@@ -4,6 +4,17 @@
 
 ![ATScribe Logo](https://img.shields.io/badge/ATScribe-AI%20Resume%20Analysis-6366f1?style=for-the-badge)
 
+## 🚀 Live Demo
+
+**Frontend**: https://atscribe-frontend-production.up.railway.app  
+**Backend**: https://atscribe-backend-production.up.railway.app/api/health
+
+## 📌 Quick Links
+
+- [GitHub Repository](https://github.com/nithin-2707/atscribe-ai-resume-analyzer)
+- [Documentation](./PROJECT_OVERVIEW.md)
+- [Deployment Guide](./DEPLOYMENT.md)
+
 **Modern MERN Stack Application with AI-Powered Resume Analysis**
 
 [![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=flat&logo=react)](https://reactjs.org/)
