@@ -97,6 +97,22 @@ const RecruiterDashboard = () => {
       return { valid: false, message: 'Job description is too short. Please provide a detailed job description (minimum 50 characters).' };
     }
 
+    // Check for repeated patterns
+    const words = trimmedText.toLowerCase().split(/\s+/);
+    if (words.length > 5) {
+      const uniqueWords = new Set(words);
+      const repetitionRatio = uniqueWords.size / words.length;
+      if (repetitionRatio < 0.3) {
+        return { valid: false, message: 'Job description appears to contain repetitive text. Please provide a genuine job description.' };
+      }
+    }
+
+    // Check if it's an error message being pasted back
+    const lowerText = trimmedText.toLowerCase();
+    if (lowerText.includes("doesn't appear to be") || lowerText.includes("please include job requirements") || lowerText.includes("error message")) {
+      return { valid: false, message: 'Please enter a real job description, not an error message or placeholder text.' };
+    }
+
     const uniqueChars = new Set(trimmedText.toLowerCase().replace(/\s/g, ''));
     if (uniqueChars.size < 10) {
       return { valid: false, message: 'Job description appears to be invalid. Please enter a meaningful job description.' };
@@ -108,19 +124,19 @@ const RecruiterDashboard = () => {
       'role', 'position', 'job', 'work', 'candidate', 'team',
       'develop', 'manage', 'lead', 'support', 'design', 'implement',
       'years', 'degree', 'bachelor', 'master', 'education',
-      'knowledge', 'ability', 'proficient', 'expertise'
+      'knowledge', 'ability', 'proficient', 'expertise', 'duties',
+      'must have', 'should have', 'looking for', 'seeking'
     ];
 
-    const lowerText = trimmedText.toLowerCase();
-    const hasJobKeywords = jobKeywords.some(keyword => lowerText.includes(keyword));
+    const keywordMatches = jobKeywords.filter(keyword => lowerText.includes(keyword)).length;
 
-    if (!hasJobKeywords) {
-      return { valid: false, message: 'This doesn\'t appear to be a valid job description. Please include job requirements, responsibilities, or qualifications.' };
+    if (keywordMatches < 4) {
+      return { valid: false, message: 'This doesn\'t appear to be a valid job description. A job description should include requirements, responsibilities, qualifications, or skills needed for the role.' };
     }
 
     const wordCount = trimmedText.split(/\s+/).length;
-    if (wordCount < 20) {
-      return { valid: false, message: 'Job description is too brief. Please provide a more detailed description (minimum 20 words).' };
+    if (wordCount < 30) {
+      return { valid: false, message: 'Job description is too brief. Please provide a detailed description (minimum 30 words) with role requirements and responsibilities.' };
     }
 
     return { valid: true, message: '' };
@@ -170,7 +186,12 @@ const RecruiterDashboard = () => {
       }
     } catch (err) {
       console.error('Ranking error:', err);
-      setError(err.response?.data?.reason || err.response?.data?.error || 'Ranking failed. Please try again.');
+      // Enhanced error handling for validation errors
+      const errorMessage = err.response?.data?.message || 
+                          err.response?.data?.reason || 
+                          err.response?.data?.error || 
+                          'Ranking failed. Please try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

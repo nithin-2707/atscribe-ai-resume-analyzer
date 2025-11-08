@@ -121,7 +121,31 @@ function validateResume(text) {
 // Validate if the text is a job description
 function validateJobDescription(text) {
   if (!text || text.trim().length < 50) {
-    return { valid: false, reason: 'Job description appears to be empty or too short. Please provide a proper job description.' };
+    return { valid: false, reason: 'Job description appears to be empty or too short. Please provide a proper job description (minimum 50 characters).' };
+  }
+
+  const trimmedText = text.trim();
+  const lowerText = text.toLowerCase();
+  
+  // Check for repeated patterns (like "ai ai ai" or "test test test")
+  const words = trimmedText.toLowerCase().split(/\s+/);
+  if (words.length > 5) {
+    const uniqueWords = new Set(words);
+    const repetitionRatio = uniqueWords.size / words.length;
+    if (repetitionRatio < 0.3) {
+      return { 
+        valid: false, 
+        reason: 'Job description appears to contain repetitive text. Please provide a genuine job description with requirements and responsibilities.' 
+      };
+    }
+  }
+
+  // Check if it's just the error message being pasted back
+  if (lowerText.includes("doesn't appear to be") || lowerText.includes("please include job requirements")) {
+    return { 
+      valid: false, 
+      reason: 'Please enter a real job description, not an error message or placeholder text.' 
+    };
   }
 
   // Job description indicators
@@ -131,21 +155,29 @@ function validateJobDescription(text) {
     'should have', 'required', 'preferred', 'looking for', 'seeking',
     'duties', 'tasks', 'company', 'team', 'work', 'bachelor', 'degree',
     'years of experience', 'knowledge of', 'expertise in', 'proficient',
-    'familiar with', 'ability to', 'strong', 'excellent'
+    'familiar with', 'ability to', 'strong', 'excellent', 'responsible for',
+    'will be', 'about the role', 'what you', 'collaborate', 'develop'
   ];
-
-  const lowerText = text.toLowerCase();
   
   // Check for job description indicators
   const jdMatches = jdKeywords.filter(keyword => 
     lowerText.includes(keyword)
   ).length;
 
-  // Need at least 3 JD keywords
-  if (jdMatches < 3) {
+  // Need at least 4 JD keywords for better accuracy
+  if (jdMatches < 4) {
     return { 
       valid: false, 
-      reason: 'This does not appear to be a valid job description. Please provide a proper job description with requirements and responsibilities.' 
+      reason: 'This does not appear to be a valid job description. A job description should include requirements, responsibilities, qualifications, or skills needed for the role.' 
+    };
+  }
+
+  // Check word count - job descriptions should have substance
+  const wordCount = trimmedText.split(/\s+/).length;
+  if (wordCount < 30) {
+    return { 
+      valid: false, 
+      reason: 'Job description is too brief. Please provide a detailed job description (minimum 30 words) with role requirements and responsibilities.' 
     };
   }
 

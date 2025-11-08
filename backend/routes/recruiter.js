@@ -45,6 +45,127 @@ async function extractTextFromPDF(buffer) {
   }
 }
 
+// Validate if the text is a resume
+function validateResume(text) {
+  if (!text || text.trim().length < 100) {
+    return { valid: false, reason: 'Resume file appears to be empty or too short. Please upload a proper resume PDF.' };
+  }
+
+  const resumeKeywords = [
+    'experience', 'education', 'skills', 'work', 'projects', 'university',
+    'college', 'degree', 'bachelor', 'master', 'certification', 'certified',
+    'employed', 'developed', 'managed', 'led', 'designed', 'implemented',
+    'achieved', 'responsibilities', 'accomplishments', 'profile', 'summary',
+    'objective', 'career', 'professional', 'intern', 'internship', 'volunteer',
+    'award', 'achievement', 'technical', 'competencies', 'expertise'
+  ];
+
+  const jobPostingKeywords = [
+    'we are looking', 'we are hiring', 'join our team', 'apply now',
+    'job description', 'job requirements', 'required qualifications',
+    'preferred qualifications', 'what we offer', 'benefits package',
+    'equal opportunity employer', 'salary range', 'compensation package',
+    'about the company', 'company culture', 'our mission', 'our vision',
+    'company benefits', 'hiring for', 'positions available'
+  ];
+
+  const lowerText = text.toLowerCase();
+  
+  const jobPostingMatches = jobPostingKeywords.filter(keyword => 
+    lowerText.includes(keyword)
+  ).length;
+  
+  if (jobPostingMatches >= 2) {
+    return { 
+      valid: false, 
+      reason: 'This appears to be a job posting, not a resume. Please upload actual candidate resume PDFs.' 
+    };
+  }
+
+  const resumeMatches = resumeKeywords.filter(keyword => 
+    lowerText.includes(keyword)
+  ).length;
+
+  if (resumeMatches < 4) {
+    return { 
+      valid: false, 
+      reason: 'This does not appear to be a valid resume. Please upload proper resumes with experience, education, and skills.' 
+    };
+  }
+
+  const hasEmail = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(text);
+  const hasPhone = /(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/.test(text);
+  
+  if (!hasEmail && !hasPhone) {
+    return { 
+      valid: false, 
+      reason: 'Resume appears incomplete. Valid resumes should contain contact information (email or phone number).' 
+    };
+  }
+
+  return { valid: true };
+}
+
+// Validate if the text is a job description
+function validateJobDescription(text) {
+  if (!text || text.trim().length < 50) {
+    return { valid: false, reason: 'Job description appears to be empty or too short. Please provide a proper job description (minimum 50 characters).' };
+  }
+
+  const trimmedText = text.trim();
+  const lowerText = text.toLowerCase();
+  
+  const words = trimmedText.toLowerCase().split(/\s+/);
+  if (words.length > 5) {
+    const uniqueWords = new Set(words);
+    const repetitionRatio = uniqueWords.size / words.length;
+    if (repetitionRatio < 0.3) {
+      return { 
+        valid: false, 
+        reason: 'Job description appears to contain repetitive text. Please provide a genuine job description with requirements and responsibilities.' 
+      };
+    }
+  }
+
+  if (lowerText.includes("doesn't appear to be") || lowerText.includes("please include job requirements")) {
+    return { 
+      valid: false, 
+      reason: 'Please enter a real job description, not an error message or placeholder text.' 
+    };
+  }
+
+  const jdKeywords = [
+    'responsibilities', 'requirements', 'qualifications', 'skills',
+    'experience', 'role', 'position', 'job', 'candidate', 'must have',
+    'should have', 'required', 'preferred', 'looking for', 'seeking',
+    'duties', 'tasks', 'company', 'team', 'work', 'bachelor', 'degree',
+    'years of experience', 'knowledge of', 'expertise in', 'proficient',
+    'familiar with', 'ability to', 'strong', 'excellent', 'responsible for',
+    'will be', 'about the role', 'what you', 'collaborate', 'develop'
+  ];
+  
+  const jdMatches = jdKeywords.filter(keyword => 
+    lowerText.includes(keyword)
+  ).length;
+
+  if (jdMatches < 4) {
+    return { 
+      valid: false, 
+      reason: 'This does not appear to be a valid job description. A job description should include requirements, responsibilities, qualifications, or skills needed for the role.' 
+    };
+  }
+
+  const wordCount = trimmedText.split(/\s+/).length;
+  if (wordCount < 30) {
+    return { 
+      valid: false, 
+      reason: 'Job description is too brief. Please provide a detailed job description (minimum 30 words) with role requirements and responsibilities.' 
+    };
+  }
+
+  return { valid: true };
+}
+
 // Rank multiple resumes against a job description
 router.post('/rank-resumes', upload.fields([
   { name: 'resumes', maxCount: 50 },
@@ -88,6 +209,16 @@ router.post('/rank-resumes', upload.fields([
       });
     }
 
+    // Validate job description
+    const jdValidation = validateJobDescription(finalJobDescription);
+    if (!jdValidation.valid) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Invalid Job Description',
+        message: jdValidation.reason 
+      });
+    }
+
     // Extract text from all resumes
     const resumeTexts = await Promise.all(
       resumeFiles.map(async (file, index) => ({
@@ -96,6 +227,27 @@ router.post('/rank-resumes', upload.fields([
         text: await extractTextFromPDF(file.buffer)
       }))
     );
+
+    // Validate all resumes
+    const invalidResumes = [];
+    for (const resume of resumeTexts) {
+      const resumeValidation = validateResume(resume.text);
+      if (!resumeValidation.valid) {
+        invalidResumes.push({
+          fileName: resume.fileName,
+          reason: resumeValidation.reason
+        });
+      }
+    }
+
+    if (invalidResumes.length > 0) {
+      return res.status(400).json({ 
+        success: false,
+        error: 'Invalid Resume Files',
+        message: `${invalidResumes.length} file(s) are not valid resumes. Please upload proper candidate resume PDFs.`,
+        invalidFiles: invalidResumes
+      });
+    }
 
     // Prepare prompt for Gemini
     const prompt = `You are an expert AI recruiter with deep knowledge of industry-specific skills and job requirements.
