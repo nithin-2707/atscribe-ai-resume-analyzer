@@ -9,17 +9,17 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// MongoDB Connection
+
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => console.log('✅ MongoDB Connected'))
 .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
-// Import Routes
+
 const analysisRoutes = require('./routes/analysis');
 const chatRoutes = require('./routes/chat');
 const prepPlanRoutes = require('./routes/prepPlan');

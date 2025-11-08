@@ -50,6 +50,108 @@ async function extractTextFromPDF(buffer) {
   }
 }
 
+// Validate if the text is a resume
+function validateResume(text) {
+  if (!text || text.trim().length < 100) {
+    return { valid: false, reason: 'Resume file appears to be empty or too short. Please upload a proper resume PDF.' };
+  }
+
+  // Resume indicators (keywords that typically appear in resumes)
+  const resumeKeywords = [
+    'experience', 'education', 'skills', 'work', 'projects', 'university',
+    'college', 'degree', 'bachelor', 'master', 'certification', 'certified',
+    'employed', 'developed', 'managed', 'led', 'designed', 'implemented',
+    'achieved', 'responsibilities', 'accomplishments', 'profile', 'summary',
+    'objective', 'career', 'professional', 'intern', 'internship', 'volunteer',
+    'award', 'achievement', 'technical', 'competencies', 'expertise'
+  ];
+
+  // Job posting indicators (should NOT be in resume)
+  const jobPostingKeywords = [
+    'we are looking', 'we are hiring', 'join our team', 'apply now',
+    'job description', 'job requirements', 'required qualifications',
+    'preferred qualifications', 'what we offer', 'benefits package',
+    'equal opportunity employer', 'salary range', 'compensation package',
+    'about the company', 'company culture', 'our mission', 'our vision',
+    'company benefits', 'hiring for', 'positions available'
+  ];
+
+  const lowerText = text.toLowerCase();
+  
+  // Check for job posting indicators (red flag)
+  const jobPostingMatches = jobPostingKeywords.filter(keyword => 
+    lowerText.includes(keyword)
+  ).length;
+  
+  if (jobPostingMatches >= 2) {
+    return { 
+      valid: false, 
+      reason: 'This appears to be a job posting, not a resume. Please upload your actual resume PDF.' 
+    };
+  }
+
+  // Check for resume indicators
+  const resumeMatches = resumeKeywords.filter(keyword => 
+    lowerText.includes(keyword)
+  ).length;
+
+  // Need at least 4 resume keywords to be considered valid
+  if (resumeMatches < 4) {
+    return { 
+      valid: false, 
+      reason: 'This does not appear to be a valid resume. Please upload a proper resume with your experience, education, and skills.' 
+    };
+  }
+
+  // Check for personal information patterns
+  const hasEmail = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(text);
+  const hasPhone = /(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/.test(text);
+  
+  // A resume should have at least an email or phone
+  if (!hasEmail && !hasPhone) {
+    return { 
+      valid: false, 
+      reason: 'Resume appears incomplete. A valid resume should contain contact information (email or phone number).' 
+    };
+  }
+
+  return { valid: true };
+}
+
+// Validate if the text is a job description
+function validateJobDescription(text) {
+  if (!text || text.trim().length < 50) {
+    return { valid: false, reason: 'Job description appears to be empty or too short. Please provide a proper job description.' };
+  }
+
+  // Job description indicators
+  const jdKeywords = [
+    'responsibilities', 'requirements', 'qualifications', 'skills',
+    'experience', 'role', 'position', 'job', 'candidate', 'must have',
+    'should have', 'required', 'preferred', 'looking for', 'seeking',
+    'duties', 'tasks', 'company', 'team', 'work', 'bachelor', 'degree',
+    'years of experience', 'knowledge of', 'expertise in', 'proficient',
+    'familiar with', 'ability to', 'strong', 'excellent'
+  ];
+
+  const lowerText = text.toLowerCase();
+  
+  // Check for job description indicators
+  const jdMatches = jdKeywords.filter(keyword => 
+    lowerText.includes(keyword)
+  ).length;
+
+  // Need at least 3 JD keywords
+  if (jdMatches < 3) {
+    return { 
+      valid: false, 
+      reason: 'This does not appear to be a valid job description. Please provide a proper job description with requirements and responsibilities.' 
+    };
+  }
+
+  return { valid: true };
+}
+
 // Analyze resume with Gemini
 async function analyzeResumeWithGemini(resumeText, jobDescription) {
   const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
@@ -214,6 +316,24 @@ router.post('/analyze', upload.fields([
 
     if (!resumeText) {
       return res.status(400).json({ error: 'Could not extract text from resume' });
+    }
+
+    // Validate that it's actually a resume
+    const resumeValidation = validateResume(resumeText);
+    if (!resumeValidation.valid) {
+      return res.status(400).json({ 
+        error: 'Invalid Resume',
+        message: resumeValidation.reason 
+      });
+    }
+
+    // Validate that job description is valid
+    const jdValidation = validateJobDescription(finalJobDescription);
+    if (!jdValidation.valid) {
+      return res.status(400).json({ 
+        error: 'Invalid Job Description',
+        message: jdValidation.reason 
+      });
     }
 
     // Analyze with Gemini

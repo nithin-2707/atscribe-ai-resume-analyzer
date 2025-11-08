@@ -165,7 +165,12 @@ const Dashboard = () => {
       }
     } catch (err) {
       console.error('Analysis error:', err);
-      setError(err.response?.data?.reason || err.response?.data?.error || 'Analysis failed. Please try again.');
+      // Enhanced error handling for validation errors
+      const errorMessage = err.response?.data?.message || 
+                          err.response?.data?.reason || 
+                          err.response?.data?.error || 
+                          'Analysis failed. Please try again.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
