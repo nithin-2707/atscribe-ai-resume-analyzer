@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
@@ -7,6 +7,52 @@ import './LandingPage.css';
 const LandingPage = () => {
   const navigate = useNavigate();
   const { setUserRole } = useApp();
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [backgroundLoaded, setBackgroundLoaded] = useState(false);
+
+  // Preload critical images
+  useEffect(() => {
+    const imagesToPreload = [
+      '/images/Group 5.png',
+      '/images/hero-globe.png',
+      '/logo.png'
+    ];
+
+    let loadedCount = 0;
+    const totalImages = imagesToPreload.length;
+
+    imagesToPreload.forEach((src) => {
+      const img = new Image();
+      img.onload = () => {
+        loadedCount++;
+        if (loadedCount === 1) {
+          // Background loaded (most critical)
+          setBackgroundLoaded(true);
+        }
+        if (loadedCount === totalImages) {
+          setImagesLoaded(true);
+        }
+      };
+      img.onerror = () => {
+        loadedCount++;
+        if (loadedCount === 1) {
+          setBackgroundLoaded(true);
+        }
+        if (loadedCount === totalImages) {
+          setImagesLoaded(true);
+        }
+      };
+      img.src = src;
+    });
+
+    // Fallback timeout
+    const timeout = setTimeout(() => {
+      setBackgroundLoaded(true);
+      setImagesLoaded(true);
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, []);
 
   const handleRoleSelection = (role) => {
     setUserRole(role);
@@ -60,12 +106,20 @@ const LandingPage = () => {
 
   return (
     <div className="landing-page">
+      {/* Loading overlay */}
+      {!backgroundLoaded && (
+        <div className="loading-overlay">
+          <div className="loading-spinner"></div>
+          <p className="loading-text">Loading ATScribe...</p>
+        </div>
+      )}
+
       {/* Hero Section */}
       <motion.section 
-        className="hero-section"
+        className={`hero-section ${backgroundLoaded ? 'loaded' : 'loading'}`}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
+        animate={{ opacity: backgroundLoaded ? 1 : 0 }}
+        transition={{ duration: 0.6 }}
       >
         <nav className="hero-nav">
           <div className="logo-container">
@@ -109,7 +163,12 @@ const LandingPage = () => {
               transition={{ delay: 0.5, duration: 1 }}
             >
               <div className="globe-container">
-                <img src="/images/hero-globe.png" alt="AI Platform" className="globe-image" />
+                <img 
+                  src="/images/hero-globe.png" 
+                  alt="AI Platform" 
+                  className={`globe-image ${imagesLoaded ? 'loaded' : ''}`}
+                  loading="eager"
+                />
               </div>
             </motion.div>
           </div>
@@ -140,6 +199,7 @@ const LandingPage = () => {
               <img 
                 src="/images/student-image.png" 
                 alt="Student"
+                loading="lazy"
               />
             </div>
             <motion.button
@@ -162,6 +222,7 @@ const LandingPage = () => {
               <img 
                 src="/images/recruiter-image.png" 
                 alt="Recruiter"
+                loading="lazy"
               />
             </div>
             <motion.button

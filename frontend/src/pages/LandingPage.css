@@ -9,22 +9,59 @@ img {
   image-rendering: crisp-edges;
 }
 
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #0a0a1a 0%, #000000 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeOut 0.5s ease-in-out 0.5s forwards;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(168, 85, 247, 0.2);
+  border-top-color: #a855f7;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  margin-top: 20px;
+  color: #cbd5e1;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
 .landing-page {
   min-height: 100vh;
   background: linear-gradient(180deg, #0a0a1a 0%, #000000 100%);
   position: relative;
   overflow-x: hidden;
   opacity: 1;
-  animation: fadeIn 0.6s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 .landing-page::before {
@@ -41,29 +78,29 @@ img {
   pointer-events: none;
 }
 
-/* Hero Section */
+/* Hero Section - Optimized loading */
 .hero-section {
   min-height: 100vh;
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  background: radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.15) 0%, transparent 50%), 
-              url('../../public/images/Group 5.png') no-repeat center center;
-  background-size: cover;
-  opacity: 1;
-  animation: heroFadeIn 0.8s ease-in-out;
+  background: radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.15) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.6s ease-in-out;
 }
 
-@keyframes heroFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.hero-section.loading {
+  background-image: radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.15) 0%, transparent 50%);
+}
+
+.hero-section.loaded {
+  background-image: radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.15) 0%, transparent 50%), 
+                    url('../../public/images/Group 5.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  opacity: 1;
 }
 
 .hero-nav {
@@ -217,14 +254,16 @@ img {
   height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 30px 80px rgba(168, 85, 247, 0.6));
-  animation: floatGlobe 6s ease-in-out infinite, globeFadeIn 1.2s ease-in-out 0.5s backwards;
   will-change: transform;
+  opacity: 0;
+  transition: opacity 0.6s ease-in-out;
+  animation: globeFadeIn 1s ease-in-out 0.6s forwards;
 }
 
 @keyframes globeFadeIn {
   from {
     opacity: 0;
-    transform: scale(0.8) translateY(30px);
+    transform: scale(0.9) translateY(20px);
   }
   to {
     opacity: 1;
@@ -232,12 +271,16 @@ img {
   }
 }
 
+.globe-image.loaded {
+  animation: globeFadeIn 1s ease-in-out forwards, floatGlobe 6s ease-in-out 1.6s infinite;
+}
+
 @keyframes floatGlobe {
   0%, 100% {
-    transform: translateY(0px);
+    transform: translateY(0px) scale(1);
   }
   50% {
-    transform: translateY(-20px);
+    transform: translateY(-20px) scale(1);
   }
 }
 
@@ -412,6 +455,15 @@ img {
   background-size: cover;
   transform: scaleY(-1);
   z-index: -1;
+  opacity: 0;
+  transition: opacity 0.6s ease-in-out;
+  animation: bgFadeIn 1s ease-in-out 0.8s forwards;
+}
+
+@keyframes bgFadeIn {
+  to {
+    opacity: 1;
+  }
 }
 
 .welcome-section {
@@ -532,6 +584,14 @@ img {
   height: 100%;
   object-fit: cover;
   border-radius: 16px;
+  opacity: 0;
+  animation: imgFadeIn 0.5s ease-in-out 0.3s forwards;
+}
+
+@keyframes imgFadeIn {
+  to {
+    opacity: 1;
+  }
 }
 
 .card-button {
