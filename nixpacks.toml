@@ -2,7 +2,7 @@
 nixPkgs = ["nodejs_22"]
 
 [phases.install]
-cmds = ["npm install --prefix backend --production=false"]
+cmds = ["npm install --prefix backend"]
 
 [start]
 cmd = "node backend/server.js"
