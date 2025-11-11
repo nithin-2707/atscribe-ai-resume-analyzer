@@ -8,6 +8,7 @@ const path = require('path');
 dotenv.config();
 
 const app = express();
+// Using Groq API (Llama 3.3) for AI-powered resume analysis
 
 
 app.use(cors());
