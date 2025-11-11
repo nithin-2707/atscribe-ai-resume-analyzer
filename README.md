@@ -61,7 +61,7 @@
 ### Backend
 - **Node.js & Express**: RESTful API server
 - **MongoDB & Mongoose**: Database and ODM
-- **Google Gemini AI**: Advanced AI analysis
+- **GROQ**: Advanced AI analysis
 - **Multer**: File upload handling
 - **PDF-Parse**: Extract text from PDF resumes
 
@@ -148,7 +148,7 @@ npm install
 # Make sure .env contains:
 # PORT=5000
 # MONGODB_URI=mongodb://localhost:27017/atscribe
-# GEMINI_API_KEY=your_gemini_api_key_here
+# GROQ_API_KEY=your_gemini_api_key_here
 # NODE_ENV=development
 
 # Start MongoDB (if not running as service)
@@ -264,7 +264,7 @@ The frontend will open automatically at `http://localhost:3000`
 ```env
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/atscribe
-GEMINI_API_KEY=your_gemini_api_key_here
+GROQ_API_KEY=your_gemini_api_key_here
 NODE_ENV=development
 ```
 
