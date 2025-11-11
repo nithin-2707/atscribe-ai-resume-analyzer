@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const OpenAI = require('openai');
 const Analysis = require('../models/Analysis');
 
 // Configure multer for file uploads
@@ -19,8 +19,11 @@ const upload = multer({
   }
 });
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Initialize Groq client (OpenAI-compatible)
+const groq = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY,
+  baseURL: 'https://api.groq.com/openai/v1'
+});
 
 // Retry helper function with exponential backoff
 async function retryWithBackoff(fn, maxRetries = 3, initialDelay = 1000) {
@@ -184,20 +187,18 @@ function validateJobDescription(text) {
   return { valid: true };
 }
 
-// Analyze resume with Gemini
-async function analyzeResumeWithGemini(resumeText, jobDescription) {
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
-
+// Analyze resume with OpenAI
+async function analyzeResumeWithGroq(resumeText, jobDescription) {
   const prompt = `
 You are an expert AI resume evaluator with deep knowledge of industry-specific skills and job requirements.
 
 Resume Text:
-${resumeText.substring(0, 2500)}
+${resumeText.substring(0, 4000)}
 
 Job Description:
-${jobDescription.substring(0, 2500)}
+${jobDescription.substring(0, 4000)}
 
-**IMPORTANT INSTRUCTIONS:**
+**CRITICAL INSTRUCTIONS:**
 
 1. **First, validate if this is a resume:**
    - If the text is NOT a resume (e.g., job posting, blank doc, random text), respond ONLY with:
@@ -206,66 +207,102 @@ ${jobDescription.substring(0, 2500)}
      "reason": "Brief explanation why it's not a resume"
    }
 
-2. **If it IS a valid resume, perform INTELLIGENT analysis:**
+2. **DOMAIN MATCH ANALYSIS - BE STRICT:**
+   - **Identify the JOB DOMAIN** from job description:
+     * Software/Tech: software engineer, developer, programmer, data scientist, ML engineer, web developer, DevOps
+     * Hardware/Electronics: VLSI, embedded systems, circuit design, PCB, FPGA, Verilog, VHDL, electronics engineer
+     * Consulting/Business: consultant, business analyst, management consulting, supply chain, operations, strategy
+     * Finance: accountant, financial analyst, investment banking, auditor, finance manager
+     * Marketing/Sales: marketing manager, sales executive, digital marketing, brand manager
+     * Data/Analytics: data analyst, business intelligence, data engineer, analytics
+     * Design: UI/UX designer, graphic designer, product designer
+     * HR/People: HR manager, recruiter, talent acquisition, people operations
+   
+   - **Identify the RESUME DOMAIN** from resume content:
+     * Look at education major, job titles, projects, skills listed
+     * Determine primary field/industry
+   
+   - **CHECK DOMAIN ALIGNMENT:**
+     * If domains are **COMPLETELY DIFFERENT** (e.g., Hardware resume for Software job, or Engineering resume for Marketing job):
+       - overall_score should be **15-35** (very low)
+       - skill_score should be **10-30** (minimal overlap)
+       - semantic_score should be **10-35** (context mismatch)
+       - In feedback, **CLEARLY STATE** domain mismatch as the PRIMARY weakness
+       - Example: "This resume is focused on hardware/electronics engineering (Verilog, VHDL, circuit design), while the job requires supply chain consulting and business operations skills. This is a fundamental domain mismatch."
+   
+   - **If domains have some overlap** (e.g., Data Science resume for ML Engineer job):
+     - Score based on actual skill matches (40-70 range)
+   
+   - **If domains align well**:
+     - Score based on experience level and skill depth (50-95 range)
 
-   A. **Technical Skills - BE SMART:**
-      - Extract technical skills EXPLICITLY mentioned in the job description
-      - **INFER industry-standard skills** based on the job title and role
-      - Examples:
-        * "Data Analyst" → SQL, Excel, Power BI, Python, Tableau, Data Visualization
-        * "Software Engineer" → Git, APIs, Database, Testing, Cloud platforms
-        * "Marketing Manager" → Google Analytics, SEO, Social Media platforms, CRM tools
-        * "Business Analyst" → Excel, SQL, PowerPoint, Requirements gathering, Process mapping
-      - Look for these inferred skills in the resume even if JD doesn't explicitly list them
-      - Technical skills include: programming languages, software tools, frameworks, platforms, methodologies
+3. **SCORING RULES - BE REALISTIC AND STRICT:**
 
-   B. **Scoring - BE ACCURATE:**
-      - overall_score: How well the overall experience and profile matches the role (0-100)
-      - semantic_score: Contextual match between resume content and JD requirements (0-100)
-      - skill_score: Combined technical + soft skills match percentage (0-100)
-      - Base scores on BOTH explicit JD requirements AND inferred role requirements
+   **overall_score (0-100):**
+   - 0-20: Wrong field entirely (hardware for software, marketing for engineering)
+   - 21-40: Different domain but some transferable skills
+   - 41-60: Same domain but junior/different specialization
+   - 61-80: Good match with some gaps
+   - 81-100: Excellent match, strong candidate
+   
+   **skill_score (0-100):**
+   - Count ACTUAL matching skills between resume and JD
+   - Don't give credit for unrelated skills (hardware skills don't help for consulting jobs)
+   - Be strict: Only 10-20% for cross-domain matches
+   
+   **semantic_score (0-100):**
+   - Measure contextual/domain alignment
+   - Low score (10-30) if candidate's industry experience doesn't match job industry
+   - High score (70-90) if candidate has worked in same/similar industry
 
-   C. **Recommendations - BE HUMAN AND PRACTICAL:**
-      - Write 6-8 personalized, actionable recommendations
-      - Use natural, conversational language (like a career coach talking)
-      - Focus on:
-        * Specific keywords missing from the resume
-        * Quantifiable achievements to add
-        * ATS optimization tips
-        * Gap areas with concrete solutions
-        * Skills to highlight or acquire
-        * Resume structure improvements
-      - Avoid generic advice like "improve your resume" - be SPECIFIC
-      - Example: Instead of "Add more skills" → "Consider adding 'SQL' and 'Power BI' since Data Analysts typically need these tools, and they're common in your field"
+4. **Technical Skills - BE DOMAIN-AWARE:**
+   - Extract technical skills EXPLICITLY mentioned in the job description
+   - **INFER industry-standard skills** based on the job title and role
+   - Examples:
+     * "Supply Chain Consultant" → SAP, Excel, Data Analytics, ERP, Logistics, Procurement
+     * "Software Engineer" → Git, APIs, Database, Testing, Cloud platforms, Programming languages
+     * "Data Analyst" → SQL, Excel, Power BI, Python, Tableau, Data Visualization
+     * "Hardware Engineer" → Verilog, VHDL, Cadence, PCB Design, Circuit Design, FPGA
+   - **DON'T** count Verilog/VHDL as valuable for a consulting job
+   - **DON'T** count Excel pivot tables as sufficient for a software engineering job
 
-   D. **Qualitative Feedback - STRUCTURED BULLET POINTS:**
-      - Format with clear sections and bullet points
-      - Make each point specific, actionable, and conversational
-      - 3-4 points per section
-      
-      **STRENGTHS** - What's working well:
-      - Specific skills or experiences that match the role perfectly
-      - Impressive certifications or education highlights
-      - Quantifiable achievements or career progression
-      - Strong technical or soft skills demonstrated
-      
-      **WEAKNESSES/GAPS** - Areas needing attention:
-      - Missing critical skills for the role
-      - Lack of quantifiable metrics or achievements
-      - Generic descriptions without impact demonstration
-      - Skills mentioned but not demonstrated with examples
-      
-      **OPPORTUNITIES** - How to enhance the resume:
-      - Specific ways to showcase experience with tools/technologies
-      - How to tailor content to emphasize relevant skills
-      - Suggestions for restructuring or highlighting key areas
-      - Ways to make achievements more impactful
-      
-      **RECOMMENDATIONS** - Priority action items:
-      - Top 3-4 immediate changes to make
-      - Specific keywords or phrases to add
-      - Concrete examples of how to improve descriptions
-      - ATS optimization strategies
+5. **Recommendations - BE HONEST:**
+   - Write 6-8 personalized, actionable recommendations
+   - If domain mismatch exists, **state it clearly** as the top recommendation
+   - Example: "This role requires supply chain and business consulting expertise, but your background is in electronics hardware engineering. Consider targeting roles in electronics/VLSI companies or gaining relevant business analysis experience first."
+   - Be specific about skill gaps
+   - Use natural, conversational language (like a career coach talking)
+
+6. **Qualitative Feedback - STRUCTURED AND HONEST:**
+   - Format with clear sections and bullet points
+   - **If domain mismatch exists, make it the FIRST weakness**
+   - Be specific, actionable, and honest
+   - 3-4 points per section
+   
+   **STRENGTHS** - What's working well:
+   - Specific skills or experiences that match the role (if any)
+   - Impressive certifications or education highlights
+   - Quantifiable achievements or career progression
+   - Strong technical or soft skills demonstrated (that are relevant)
+   
+   **WEAKNESSES/GAPS** - Areas needing attention:
+   - **PRIMARY: Domain/field mismatch if applicable** (e.g., "This resume is focused on electronics hardware engineering while the job requires supply chain consulting expertise - a fundamental career field mismatch")
+   - Missing critical skills for the role
+   - Lack of quantifiable metrics or achievements
+   - Generic descriptions without impact demonstration
+   - Skills mentioned but not demonstrated with examples
+   
+   **OPPORTUNITIES** - How to enhance the resume:
+   - Specific ways to showcase experience with tools/technologies
+   - How to tailor content to emphasize relevant skills
+   - Suggestions for restructuring or highlighting key areas
+   - Ways to make achievements more impactful
+   
+   **RECOMMENDATIONS** - Priority action items:
+   - Top 3-4 immediate changes to make
+   - Specific keywords or phrases to add
+   - Concrete examples of how to improve descriptions
+   - ATS optimization strategies
 
 **OUTPUT FORMAT (JSON only, no markdown):**
 
@@ -275,41 +312,51 @@ ${jobDescription.substring(0, 2500)}
   "semantic_score": number (0-100),
   "skill_score": number (0-100),
 
-  "feedback": "STRENGTHS\\n- The resume highlights relevant skills like analytical thinking and problem-solving, crucial for this role.\\n- AWS Certified Cloud Practitioner and Microsoft Azure Data Fundamentals certifications demonstrate strong technical aptitude.\\n- Educational background in relevant field shows foundational knowledge.\\n\\nWEAKNESSES/GAPS\\n- The resume lacks quantifiable achievements and specific examples of how skills contributed to business outcomes.\\n- Project descriptions are too generic and don't showcase complexity or measurable impact.\\n- Missing specific mentions of key tools that are standard for this role.\\n\\nOPPORTUNITIES\\n- Add more details on experience with data analytics tools, specifically how Power BI or similar tools were used.\\n- Tailor the resume to emphasize skills relevant to the specific domain mentioned in the job description.\\n- Strengthen project descriptions by adding metrics that demonstrate value delivered.\\n\\nRECOMMENDATIONS\\n- Add specific metrics to quantify project impact (e.g., 'improved efficiency by X%', 'processed Y records').\\n- Research the company's focus areas and tailor the resume to highlight aligned skills and experiences.\\n- Include keywords from the job description naturally throughout experience and skills sections.",
+  "feedback": "STRENGTHS\\n- Point 1\\n- Point 2\\n\\nWEAKNESSES/GAPS\\n- PRIMARY domain mismatch if applicable\\n- Other points\\n\\nOPPORTUNITIES\\n- Point 1\\n\\nRECOMMENDATIONS\\n- Point 1",
 
   "soft_skills_required": ["Communication", "Teamwork", "Problem-solving", etc.],
   "soft_skills_present": ["Leadership", "Collaboration", etc.],
-  "technical_skills_required": ["SQL", "Python", "Excel", etc. - include BOTH explicit and inferred skills],
-  "technical_skills_present": ["Java", "React", "MongoDB", etc.],
+  "technical_skills_required": ["SQL", "Python", "Excel", etc. - domain-appropriate skills],
+  "technical_skills_present": ["Java", "React", "MongoDB", etc. - skills from resume],
 
   "recommendations": [
-      "Personalized recommendation 1 with specific examples",
-      "Personalized recommendation 2 with concrete actions",
-      "Personalized recommendation 3 addressing gaps",
-      "Personalized recommendation 4 about achievements",
-      "Personalized recommendation 5 about keywords",
-      "Personalized recommendation 6 about ATS optimization"
+      "If domain mismatch: State it clearly as #1",
+      "Personalized recommendation 2 with specific examples",
+      "Personalized recommendation 3 with concrete actions",
+      "Personalized recommendation 4 addressing gaps",
+      "Personalized recommendation 5 about achievements",
+      "Personalized recommendation 6 about keywords"
   ]
 }
 `;
 
   try {
-    const result = await retryWithBackoff(async () => {
-      return await model.generateContent(prompt);
+    const completion = await retryWithBackoff(async () => {
+      return await groq.chat.completions.create({
+        model: "llama-3.3-70b-versatile", // Latest Groq Llama 3.3 model
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert resume analyzer. Always respond with valid JSON only, no markdown formatting."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.7,
+        max_tokens: 2500
+      });
     });
     
-    const response = await result.response;
-    const text = response.text();
+    const responseText = completion.choices[0].message.content;
+    const analysis = JSON.parse(responseText);
     
-    // Extract JSON from response
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
-    }
-    throw new Error('Invalid response format from Gemini');
+    return analysis;
   } catch (error) {
-    console.error('Gemini API Error:', error);
-    throw new Error('Failed to analyze resume');
+    console.error('Groq API Error:', error);
+    throw new Error(`Failed to analyze resume: ${error.message}`);
   }
 }
 
@@ -368,8 +415,8 @@ router.post('/analyze', upload.fields([
       });
     }
 
-    // Analyze with Gemini
-    const analysis = await analyzeResumeWithGemini(resumeText, finalJobDescription);
+    // Analyze with OpenAI
+    const analysis = await analyzeResumeWithGroq(resumeText, finalJobDescription);
 
     // Check if resume is valid
     if (analysis.resume_valid === false) {

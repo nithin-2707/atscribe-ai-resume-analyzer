@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const OpenAI = require('openai');
 const Chat = require('../models/Chat');
 
 // Configure multer for file uploads
@@ -19,8 +19,11 @@ const upload = multer({
   }
 });
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Initialize Groq client (OpenAI-compatible)
+const groq = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY,
+  baseURL: 'https://api.groq.com/openai/v1'
+});
 
 // Retry helper function with exponential backoff
 async function retryWithBackoff(fn, maxRetries = 3, initialDelay = 1000) {
@@ -109,17 +112,16 @@ router.post('/message', async (req, res) => {
       content: message,
     });
 
-    // Generate response with Gemini
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
-
+    // Generate response with OpenAI
     // Build conversation history
     const chatHistory = chat.messages
       .slice(-10) // Last 10 messages for context
-      .map(msg => `${msg.role === 'user' ? 'Q' : 'A'}: ${msg.content}`)
-      .join('\n');
+      .map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'assistant',
+        content: msg.content
+      }));
 
-    const prompt = `
-You are an AI assistant that gives **detailed, step-by-step, professional answers** 
+    const systemPrompt = `You are an AI assistant that gives **detailed, step-by-step, professional answers** 
 based only on the given resume.
 
 Resume:
@@ -127,25 +129,27 @@ Resume:
 ${chat.resumeText}
 """
 
-Conversation so far:
-${chatHistory}
-
 Rules:
 1. Always analyze the question before answering.
 2. Provide at least 3–5 sentences per answer (structured and professional).
 3. Only answer based on the resume.
 4. If unrelated to resume, reply: "I can only answer based on the resume."
-5. Use formatting (bullet points, numbered steps) if it improves clarity.
+5. Use formatting (bullet points, numbered steps) if it improves clarity.`;
 
-Q: ${message}
-A:`;
-
-    const result = await retryWithBackoff(async () => {
-      return await model.generateContent(prompt);
+    const completion = await retryWithBackoff(async () => {
+      return await groq.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...chatHistory,
+          { role: "user", content: message }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000
+      });
     });
     
-    const response = await result.response;
-    const aiResponse = response.text();
+    const aiResponse = completion.choices[0].message.content;
 
     // Add assistant message
     chat.messages.push({

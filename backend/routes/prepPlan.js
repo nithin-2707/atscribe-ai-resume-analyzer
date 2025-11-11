@@ -1,11 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const OpenAI = require('openai');
 const PrepPlan = require('../models/PrepPlan');
 const Analysis = require('../models/Analysis');
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Initialize Groq client (OpenAI-compatible)
+const groq = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY,
+  baseURL: 'https://api.groq.com/openai/v1'
+});
 
 // Retry helper function with exponential backoff
 async function retryWithBackoff(fn, maxRetries = 3, initialDelay = 1000) {
@@ -50,9 +53,7 @@ router.post('/generate', async (req, res) => {
       });
     }
 
-    // Generate preparation plan with Gemini
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
-
+    // Generate preparation plan with OpenAI
     const prompt = `
 Resume: ${analysis.resumeText.substring(0, 1500)}
 Job Description: ${analysis.jobDescription.substring(0, 1500)}
@@ -90,12 +91,25 @@ Make it actionable, realistic, and tailored to the candidate's current level and
 Format with clear headers, bullet points, and numbered lists for easy readability.
 `;
 
-    const result = await retryWithBackoff(async () => {
-      return await model.generateContent(prompt);
+    const completion = await retryWithBackoff(async () => {
+      return await groq.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert career coach and preparation plan creator. Create detailed, actionable preparation plans."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 2000
+      });
     });
     
-    const response = await result.response;
-    const planText = response.text();
+    const planText = completion.choices[0].message.content;
 
     // Save plan to database
     const prepPlan = new PrepPlan({

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const OpenAI = require('openai');
 const Candidate = require('../models/Candidate');
 const RecruiterSession = require('../models/RecruiterSession');
 
@@ -13,8 +13,11 @@ const upload = multer({
   limits: { fileSize: 200 * 1024 * 1024 } // 200MB limit
 });
 
-// Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Initialize Groq client (OpenAI-compatible)
+const groq = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY,
+  baseURL: 'https://api.groq.com/openai/v1'
+});
 
 // Retry helper function with exponential backoff
 async function retryWithBackoff(fn, maxRetries = 3, initialDelay = 1000) {
@@ -264,38 +267,64 @@ ${r.text.substring(0, 3000)}
 
 **INTELLIGENT RANKING INSTRUCTIONS:**
 
-1. **First, identify the job title/role** from the job description
+1. **DOMAIN MATCH ANALYSIS - BE CRITICAL:**
+   - **Identify the JOB DOMAIN** from job description:
+     * Software/Tech: software engineer, developer, data scientist, ML, web dev, DevOps
+     * Hardware/Electronics: VLSI, embedded, circuit design, PCB, FPGA, Verilog, VHDL
+     * Consulting/Business: consultant, business analyst, management, supply chain, operations
+     * Finance: accountant, financial analyst, investment, auditor
+     * Marketing/Sales: marketing, sales, digital marketing, brand
+     * Data/Analytics: data analyst, BI, data engineer, analytics
+   
+   - **For EACH resume, identify its DOMAIN**:
+     * Look at education, job titles, projects, primary skills
+   
+   - **SCORING RULES:**
+     * **Domain mismatch** (e.g., Hardware resume for Consulting job): fitScore 15-35 maximum
+     * **Different domain with transferable skills**: fitScore 35-55
+     * **Same domain, different level**: fitScore 50-75
+     * **Strong domain match**: fitScore 70-95
+   
+   - **In justification, STATE domain mismatch clearly** if it exists
 
-2. **Infer industry-standard skills** based on the role:
+2. **Identify the job title/role** from the job description and infer industry-standard skills
+
+3. **Infer required skills** based on the role:
    - Examples:
-     * "Data Analyst" → SQL, Excel, Power BI, Python, Tableau, Data Visualization
-     * "Software Engineer" → Git, APIs, Database, Testing, Cloud platforms
-     * "Marketing Manager" → Google Analytics, SEO, Social Media, CRM tools
-     * "Business Analyst" → Excel, SQL, PowerPoint, Requirements gathering
+     * "Supply Chain Consultant" → SAP, Excel, Data Analytics, ERP, Procurement, Logistics
+     * "Software Engineer" → Git, APIs, Database, Testing, Cloud, Programming languages
+     * "Data Analyst" → SQL, Excel, Power BI, Python, Tableau
+     * "Hardware Engineer" → Verilog, VHDL, Cadence, PCB, Circuit Design, FPGA
 
-3. **Evaluate each resume on:**
-   - Skills match (BOTH explicit JD skills AND inferred role requirements)
+4. **Evaluate each resume STRICTLY on:**
+   - **PRIMARY: Domain/field alignment** (hardware vs software vs business vs marketing)
+   - Skills match (only count relevant domain skills)
    - Experience relevance and depth
-   - Education alignment
+   - Education alignment with job field
    - Quantifiable achievements
-   - Overall contextual fit
 
-4. **Scoring - BE ACCURATE:**
-   - fitScore should reflect true match against explicit + inferred requirements
-   - Consider both hard skills and soft skills
-   - Factor in years of experience and career progression
-   - Value specific achievements over generic responsibilities
+5. **fitScore - BE REALISTIC:**
+   - 15-35: Wrong domain/field (hardware for software, engineering for marketing)
+   - 35-55: Different domain but some transferable skills
+   - 55-75: Same domain, different specialization or junior
+   - 75-90: Strong match with minor gaps
+   - 90-100: Excellent match, ideal candidate
 
-5. **Strengths - BE SPECIFIC:**
-   - Call out exact matching skills and experiences
+6. **Strengths - BE HONEST:**
+   - Call out exact matching skills (only if domain-relevant)
+   - If domain mismatch, acknowledge limited alignment
    - Mention relevant certifications or education
    - Highlight quantifiable achievements
-   - Note industry experience
 
-6. **Missing Skills - BE PRACTICAL:**
-   - Only list truly critical gaps
-   - Focus on must-have skills for the role
-   - Don't list nice-to-have as missing unless critical
+7. **Missing Skills - BE DOMAIN-AWARE:**
+   - List critical skills for the ACTUAL job domain
+   - If candidate is from different domain, list fundamental domain skills missing
+   - Example: For consulting job, if hardware resume: "Supply chain management, business analysis, ERP systems, consulting experience"
+
+8. **Justification - BE FRANK:**
+   - If domain mismatch, state it clearly: "Background is in electronics hardware engineering while role requires supply chain consulting expertise"
+   - Be specific about why score is low/high
+   - Provide honest career guidance
 
 **OUTPUT FORMAT (JSON only, no markdown):**
 
@@ -305,40 +334,46 @@ ${r.text.substring(0, 3000)}
       "rank": 1,
       "fileName": "resume_name.pdf",
       "name": "Candidate Name (extract from resume, or 'Candidate X')",
-      "fitScore": number (0-100),
+      "fitScore": number (15-100, BE STRICT about domain mismatch),
       "strengths": [
-        "Specific strength 1 with examples",
+        "Specific strength 1 (only if domain-relevant)",
         "Specific strength 2 with achievements",
         "Specific strength 3 with relevant skills"
       ],
-      "missingSkills": ["Critical missing skill 1", "Critical missing skill 2"],
-      "justification": "Natural, human-like 2-3 sentence explanation of why this candidate ranks here, focusing on key differentiators and fit"
+      "missingSkills": ["Critical domain skill 1", "Critical domain skill 2", "Fundamental field expertise"],
+      "justification": "HONEST assessment: If domain mismatch, state it clearly. Example: 'Candidate has strong electronics hardware background (Verilog, VHDL) but lacks supply chain consulting and business operations expertise required for this role.' Or if good match: 'Strong alignment with 5+ years in supply chain management and proven ERP implementation experience.'"
     }
   ]
 }
 
-**CRITICAL:** Rank from highest to lowest fitScore. Be objective but context-aware, not just keyword matching.`;
+**CRITICAL:** Rank from highest to lowest fitScore. BE STRICT about domain alignment. A hardware engineer should NOT score 55% for a consulting job - score should be 20-30% maximum.`;
 
-    // Call Gemini AI with retry logic
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
-    
-    const result = await retryWithBackoff(async () => {
-      return await model.generateContent(prompt);
+    // Call Groq API with retry logic
+    const completion = await retryWithBackoff(async () => {
+      return await groq.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert resume ranker. Always respond with valid JSON only, no markdown formatting. Be strict about domain matching."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.7,
+        max_tokens: 3000
+      });
     });
     
-    const response = await result.response;
-    const text = response.text();
+    const text = completion.choices[0].message.content;
 
     // Parse JSON response
     let analysisData;
     try {
-      // Try to extract JSON from response
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        analysisData = JSON.parse(jsonMatch[0]);
-      } else {
-        analysisData = JSON.parse(text);
-      }
+      analysisData = JSON.parse(text);
     } catch (parseError) {
       console.error('JSON parsing error:', parseError);
       console.error('Raw response:', text);
@@ -451,25 +486,32 @@ Return output strictly in JSON format:
 
 Generate 3-5 varied assignments covering different skill aspects from the JD.`;
 
-    // Call Gemini AI with retry logic
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
-    
-    const result = await retryWithBackoff(async () => {
-      return await model.generateContent(prompt);
+    // Call Groq API with retry logic
+    const completion = await retryWithBackoff(async () => {
+      return await groq.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert at creating candidate assessment assignments. Always respond with valid JSON only."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.8,
+        max_tokens: 1500
+      });
     });
     
-    const response = await result.response;
-    const text = response.text();
+    const text = completion.choices[0].message.content;
 
     // Parse JSON response
     let assignmentData;
     try {
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        assignmentData = JSON.parse(jsonMatch[0]);
-      } else {
-        assignmentData = JSON.parse(text);
-      }
+      assignmentData = JSON.parse(text);
     } catch (parseError) {
       console.error('JSON parsing error:', parseError);
       return res.status(500).json({
