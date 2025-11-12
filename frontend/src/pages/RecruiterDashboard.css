@@ -207,7 +207,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.3s ease;
+  
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
@@ -272,7 +272,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  
 }
 
 .jd-remove-button:disabled {
@@ -411,7 +411,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: all 0.3s ease;
+  
 }
 
 .analyze-button.secondary {
@@ -510,7 +510,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: all 0.3s ease;
+  
 }
 
 .ranked-candidates {

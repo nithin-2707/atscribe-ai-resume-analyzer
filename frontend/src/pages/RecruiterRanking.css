@@ -88,7 +88,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: all 0.3s ease;
+  
 }
 
 .no-data {
@@ -125,7 +125,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: all 0.3s ease;
+  
 }
 
 .candidate-card-simple {
@@ -325,7 +325,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: all 0.3s ease;
+  
 }
 
 .analyze-button:disabled {
@@ -387,7 +387,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: all 0.3s ease;
+  
 }
 
 .ranked-candidates {

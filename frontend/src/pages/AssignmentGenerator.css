@@ -139,7 +139,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  transition: all 0.3s ease;
+  
 }
 
 .generate-button:disabled {
@@ -201,7 +201,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: all 0.3s ease;
+  
 }
 
 .assignments-list {

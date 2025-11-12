@@ -238,15 +238,7 @@
 .skill-tag.missing {
   background: rgba(239, 68, 68, 0.2);
   border: 1px solid rgba(239, 68, 68, 0.4);
-  border-radius: 50%;
   color: #fca5a5;
-  font-size: 1.5rem;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
 }
 
 .no-data-text {
