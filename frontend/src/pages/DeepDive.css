@@ -101,14 +101,8 @@
   border: 1px solid rgba(60, 60, 60, 0.5);
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
-}
-
-.summary-card:hover {
-  transform: translateY(-3px);
-  border-color: #9448C4;
-  box-shadow: 0 6px 25px rgba(148, 72, 196, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .summary-icon {
@@ -187,16 +181,10 @@
   background: rgba(40, 40, 40, 0.8);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(60, 60, 60, 0.5);
-  border-radius: 20px;
-  padding: 30px;
+  border-radius: 16px;
+  padding: 20px;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.skill-card:hover {
-  border-color: #9448C4;
-  transform: translateY(-5px);
-  box-shadow: 0 10px 40px rgba(148, 72, 196, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .skill-card h3 {
@@ -250,11 +238,15 @@
 .skill-tag.missing {
   background: rgba(239, 68, 68, 0.2);
   border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 50%;
   color: #fca5a5;
-}
-
-.skill-tag:hover {
-  transform: scale(1.05);
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
 }
 
 .no-data-text {
@@ -297,15 +289,16 @@
   display: flex;
   gap: 20px;
   padding: 20px;
-  background: rgba(50, 50, 50, 0.6);
-  border-left: 4px solid #9448C4;
+  background: rgba(50, 50, 50, 0.8);
+  border: 1px solid rgba(80, 80, 80, 0.6);
+  color: white;
   border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   transition: all 0.3s ease;
-}
-
-.recommendation-item:hover {
-  background: rgba(60, 60, 60, 0.8);
-  transform: translateX(5px);
 }
 
 .rec-number {
@@ -359,13 +352,13 @@
 }
 
 .insight-card.success {
-  background: rgba(16, 185, 129, 0.1);
-  border-color: rgba(16, 185, 129, 0.3);
-}
-
-.insight-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(148, 72, 196, 0.3);
+  background: rgba(16, 185, 129, 0.2);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 .insight-icon {

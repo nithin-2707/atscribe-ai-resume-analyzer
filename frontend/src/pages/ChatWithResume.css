@@ -92,22 +92,21 @@
 
 .clear-button {
   background: rgba(239, 68, 68, 0.2);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 50%;
   color: #fca5a5;
-}
-
-.clear-button:hover {
-  background: rgba(239, 68, 68, 0.3);
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
 }
 
 .upload-button {
   background: linear-gradient(180deg, #9448C4 0%, #5D2A91 100%);
   color: white;
-}
-
-.upload-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
 }
 
 .chat-welcome {
@@ -194,7 +193,6 @@
 .message.assistant .message-avatar {
   background: linear-gradient(180deg, #9448C4 0%, #5D2A91 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(148, 72, 196, 0.4);
   border: 2px solid rgba(148, 72, 196, 0.3);
 }
 
@@ -211,7 +209,6 @@
 .message.assistant .message-content {
   background: linear-gradient(135deg, rgba(148, 72, 196, 0.15) 0%, rgba(93, 42, 145, 0.1) 100%);
   border: 1px solid rgba(148, 72, 196, 0.4);
-  box-shadow: 0 4px 20px rgba(148, 72, 196, 0.15);
   color: #f1f5f9;
   font-size: 1rem;
   position: relative;
@@ -315,7 +312,6 @@
 .message.assistant:first-child .message-content {
   background: linear-gradient(135deg, rgba(148, 72, 196, 0.25) 0%, rgba(93, 42, 145, 0.15) 100%);
   border: 1px solid rgba(148, 72, 196, 0.5);
-  box-shadow: 0 6px 25px rgba(148, 72, 196, 0.25);
   padding: 20px 25px;
 }
 
@@ -484,17 +480,13 @@
   border: none;
   border-radius: 12px;
   color: white;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 12px;
   transition: all 0.3s ease;
-}
-
-.send-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
 }
 
 .send-button:disabled {

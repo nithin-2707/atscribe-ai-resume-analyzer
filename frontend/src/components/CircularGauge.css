@@ -12,11 +12,6 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
-.gauge-container:hover {
-  border-color: #9448C4;
-  box-shadow: 0 10px 40px rgba(148, 72, 196, 0.3);
-}
-
 .gauge-wrapper {
   width: 200px;
   height: 200px;

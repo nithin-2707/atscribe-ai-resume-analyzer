@@ -56,12 +56,6 @@
   transition: all 0.3s ease;
 }
 
-.mode-badge.clickable:hover {
-  background: rgba(60, 60, 60, 0.8);
-  border-color: rgba(100, 100, 100, 0.7);
-  transform: translateY(-1px);
-}
-
 .dropdown-icon {
   font-size: 0.75rem;
   transition: transform 0.3s ease;
@@ -102,12 +96,6 @@
 
 .mode-option:last-child {
   margin-bottom: 0;
-}
-
-.mode-option:hover {
-  background: rgba(60, 60, 60, 0.9);
-  transform: translateX(5px);
-  border-color: rgba(100, 100, 100, 0.6);
 }
 
 .mode-option.active {
@@ -223,12 +211,6 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.upload-jd-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  background: #3a3a3a;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-}
-
 .upload-jd-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -293,12 +275,6 @@
   transition: all 0.3s ease;
 }
 
-.jd-remove-button:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.3);
-  border-color: rgba(239, 68, 68, 0.6);
-  color: #ff5555;
-}
-
 .jd-remove-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -307,17 +283,16 @@
 .dropzone {
   border: 2px dashed rgba(80, 80, 80, 0.6);
   border-radius: 16px;
-  padding: 60px 40px;
+  padding: 40px;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: rgba(30, 30, 30, 0.6);
+  background: rgba(20, 20, 20, 0.5);
 }
 
-.dropzone:hover, .dropzone.dragging {
+.dropzone.dragging {
   border-color: #9448C4;
   background: rgba(50, 50, 50, 0.8);
-  transform: scale(1.02);
 }
 
 .dropzone.has-file {
@@ -360,14 +335,8 @@
   padding: 12px 16px;
   background: rgba(20, 20, 20, 0.8);
   border: 1px solid rgba(60, 60, 60, 0.5);
-  border-radius: 8px;
-  margin-bottom: 8px;
+  border-radius: 10px;
   transition: all 0.3s ease;
-}
-
-.file-item:hover {
-  border-color: #9448C4;
-  background: rgba(148, 72, 196, 0.1);
 }
 
 .file-icon {
@@ -386,17 +355,17 @@
 
 .remove-file-btn {
   background: rgba(239, 68, 68, 0.2);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 50%;
   color: #fca5a5;
-  padding: 6px 10px;
-  border-radius: 6px;
+  font-size: 1.2rem;
   cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.3s ease;
-}
-
-.remove-file-btn:hover {
-  background: rgba(239, 68, 68, 0.3);
-  transform: scale(1.1);
 }
 
 .job-desc-textarea {
@@ -442,17 +411,11 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 10px 40px rgba(148, 72, 196, 0.3);
   transition: all 0.3s ease;
 }
 
 .analyze-button.secondary {
   background: linear-gradient(180deg, #3b82f6 0%, #1e40af 100%);
-}
-
-.analyze-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 15px 50px rgba(148, 72, 196, 0.4);
 }
 
 .analyze-button:disabled {
@@ -536,11 +499,6 @@
   color: white;
 }
 
-.tab:hover:not(.active) {
-  background: rgba(60, 60, 60, 0.6);
-  color: #e2e8f0;
-}
-
 .new-analysis-button {
   padding: 12px 28px;
   background: rgba(50, 50, 50, 0.8);
@@ -553,11 +511,6 @@
   align-items: center;
   gap: 10px;
   transition: all 0.3s ease;
-}
-
-.new-analysis-button:hover {
-  background: rgba(60, 60, 60, 0.9);
-  transform: translateY(-2px);
 }
 
 .ranked-candidates {
@@ -587,16 +540,13 @@
   color: white;
   border: none;
   border-radius: 12px;
-  font-size: 1.05rem;
-  font-weight: 600;
+  font-size: 1.15rem;
+  font-weight: 700;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 30px rgba(148, 72, 196, 0.3);
-}
-
-.view-detailed-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(148, 72, 196, 0.4);
 }
 
 .candidate-card-summary {
@@ -604,18 +554,10 @@
   backdrop-filter: blur(20px);
   border: 1px solid rgba(60, 60, 60, 0.5);
   border-radius: 16px;
-  padding: 20px 25px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
+  padding: 20px;
+  cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-.candidate-card-summary:hover {
-  border-color: #9448C4;
-  transform: translateX(5px);
-  box-shadow: 0 5px 20px rgba(148, 72, 196, 0.3);
 }
 
 .candidate-info-summary {
@@ -676,8 +618,8 @@
 
 .view-all-btn {
   padding: 10px 24px;
-  background: rgba(60, 60, 60, 0.6);
-  border: 1px solid rgba(80, 80, 80, 0.5);
+  background: rgba(60, 60, 60, 0.8);
+  border: 1px solid rgba(80, 80, 80, 0.6);
   color: white;
   border-radius: 10px;
   font-weight: 600;
@@ -685,30 +627,16 @@
   transition: all 0.3s ease;
 }
 
-.view-all-btn:hover {
-  background: rgba(148, 72, 196, 0.2);
-  border-color: #9448C4;
-  transform: scale(1.05);
-}
-
 .candidate-card {
   background: rgba(40, 40, 40, 0.8);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(60, 60, 60, 0.5);
-  border-radius: 20px;
-  padding: 30px;
+  border-radius: 16px;
+  padding: 25px;
   display: flex;
   gap: 20px;
   transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-.candidate-card:hover {
-  border-color: #9448C4;
-  transform: translateY(-3px);
-  box-shadow: 0 10px 40px rgba(148, 72, 196, 0.3);
 }
 
 .rank-badge {
@@ -798,18 +726,10 @@
   background: rgba(40, 40, 40, 0.8);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(60, 60, 60, 0.5);
-  border-radius: 20px;
-  padding: 30px;
-  display: flex;
-  gap: 20px;
+  border-radius: 16px;
+  padding: 25px;
   transition: all 0.3s ease;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-.assignment-card:hover {
-  border-color: #9448C4;
-  transform: translateX(5px);
-  box-shadow: 0 10px 40px rgba(148, 72, 196, 0.3);
 }
 
 .assignment-number {

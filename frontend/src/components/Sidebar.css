@@ -31,10 +31,6 @@
   transition: transform 0.3s ease;
 }
 
-.sidebar-logo:hover {
-  transform: scale(1.05);
-}
-
 .sidebar-nav {
   flex: 1;
   padding: 20px 15px;
@@ -53,11 +49,6 @@
   transition: all 0.3s ease;
   color: #999999;
   font-weight: 500;
-}
-
-.sidebar-item:hover {
-  background: rgba(148, 72, 196, 0.15);
-  color: #ffffff;
 }
 
 .sidebar-item.active {

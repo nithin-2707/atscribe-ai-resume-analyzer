@@ -150,11 +150,6 @@ img {
   box-shadow: 0 8px 25px rgba(168, 85, 247, 0.4);
 }
 
-.get-started-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 35px rgba(168, 85, 247, 0.6);
-}
-
 .hero-content {
   flex: 1;
   display: flex;

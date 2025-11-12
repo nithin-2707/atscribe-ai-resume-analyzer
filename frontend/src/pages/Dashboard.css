@@ -38,10 +38,6 @@
   color: #aaaaaa;
 }
 
-.dashboard-logo:hover {
-  transform: scale(1.05);
-}
-
 .header-right {
   display: flex;
   align-items: center;
@@ -69,12 +65,6 @@
   align-items: center;
   gap: 10px;
   transition: all 0.3s ease;
-}
-
-.mode-badge.clickable:hover {
-  background: rgba(60, 60, 60, 0.8);
-  border-color: rgba(100, 100, 100, 0.7);
-  transform: translateY(-1px);
 }
 
 .dropdown-icon {
@@ -117,12 +107,6 @@
 
 .mode-option:last-child {
   margin-bottom: 0;
-}
-
-.mode-option:hover {
-  background: rgba(60, 60, 60, 0.9);
-  transform: translateX(5px);
-  border-color: rgba(100, 100, 100, 0.6);
 }
 
 .mode-option.active {
@@ -232,12 +216,6 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.upload-jd-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  background: #3a3a3a;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-}
-
 .upload-jd-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -302,12 +280,6 @@
   transition: all 0.3s ease;
 }
 
-.jd-remove-button:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.3);
-  border-color: rgba(239, 68, 68, 0.6);
-  color: #ff5555;
-}
-
 .jd-remove-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -323,10 +295,9 @@
   background: rgba(20, 20, 20, 0.5);
 }
 
-.dropzone:hover, .dropzone.dragging {
+.dropzone.dragging {
   border-color: #9448C4;
   background: rgba(50, 50, 50, 0.5);
-  transform: scale(1.02);
 }
 
 .dropzone.has-file {
@@ -398,13 +369,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  box-shadow: 0 10px 40px rgba(148, 72, 196, 0.3);
   transition: all 0.3s ease;
-}
-
-.analyze-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 15px 50px rgba(148, 72, 196, 0.4);
 }
 
 .analyze-button:disabled {
@@ -464,11 +429,6 @@
   align-items: center;
   gap: 10px;
   transition: all 0.3s ease;
-}
-
-.new-analysis-button:hover {
-  background: rgba(60, 60, 60, 0.9);
-  transform: translateY(-2px);
 }
 
 .gauges-container {
@@ -560,13 +520,6 @@
   transition: all 0.3s ease;
   text-align: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-.nav-card:hover {
-  border-color: #9448C4;
-  background: rgba(148, 72, 196, 0.15);
-  transform: translateY(-5px);
-  box-shadow: 0 8px 30px rgba(148, 72, 196, 0.3);
 }
 
 .nav-icon {
