@@ -20,7 +20,7 @@
 [![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=flat&logo=react)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=flat&logo=node.js)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248?style=flat&logo=mongodb)](https://www.mongodb.com/)
-[![Gemini AI](https://img.shields.io/badge/Gemini-AI%20Powered-8b5cf6?style=flat)](https://ai.google.dev/)
+[![Groq AI](https://img.shields.io/badge/Groq-AI%20Powered-ff4d4d?style=flat)](https://groq.com/)
 
 </div>
 
@@ -366,7 +366,7 @@ This project is licensed under the MIT License.
 
 ## 🙏 Acknowledgments
 
-- **Google Gemini AI** for powerful AI capabilities
+- **GROQ AI** for powerful AI capabilities
 - **React Team** for the amazing frontend library
 - **Framer Motion** for smooth animations
 - **MongoDB** for flexible database solution
@@ -399,7 +399,6 @@ If you encounter any issues or have questions:
 
 <div align="center">
 
-**Made with ❤️ using MERN Stack + AI**
 
 ⭐ Star this repo if you find it helpful!
 
