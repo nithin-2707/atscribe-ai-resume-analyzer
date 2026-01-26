@@ -6,10 +6,9 @@
 
 ## 🚀 Live Demo
 
-**Frontend**: Coming soon on Vercel  
-**Backend**: Coming soon on Render  
+**Frontend**: https://atscribe-ai-resume-analyzer-fronten.vercel.app
+**Backend**: https://atscribe-ai-resume-analyzer.onrender.com  
 
-*Follow [RENDER_VERCEL_DEPLOYMENT.md](./RENDER_VERCEL_DEPLOYMENT.md) to deploy your own instance for FREE!*
 
 ## 📌 Quick Links
 
@@ -312,48 +311,6 @@ The build folder will contain optimized production files.
 
 ---
 
-## 🚢 Deployment
-
-### 🚀 Free Forever Deployment
-
-Deploy ATScribe on **Render (Backend)** + **Vercel (Frontend)** - completely FREE!
-
-#### Quick Deploy Steps:
-
-1. **Push to GitHub**
-   ```bash
-   git add .
-   git commit -m "feat: deploy ATScribe"
-   git push origin main
-   ```
-
-2. **Setup MongoDB Atlas** (Free M0 cluster)
-   - Create account at https://www.mongodb.com/cloud/atlas
-   - Get connection string
-
-3. **Deploy Backend on Render**
-   - Sign up at https://render.com
-   - New Web Service → Connect GitHub repo
-   - Root Directory: `backend`
-   - Add environment variables (MongoDB URI, Groq API key)
-
-4. **Deploy Frontend on Vercel**
-   - Sign up at https://vercel.com
-   - Import Project → Select GitHub repo
-   - Root Directory: `frontend`
-   - Add `REACT_APP_API_URL` environment variable
-
-5. **Update CORS** - Add frontend URL to backend env vars
-
-📖 **Detailed Guide**: See [RENDER_VERCEL_DEPLOYMENT.md](./RENDER_VERCEL_DEPLOYMENT.md)  
-⚡ **Quick Reference**: See [QUICK_DEPLOY.md](./QUICK_DEPLOY.md)
-
-**Total Cost**: $0/month forever! 🎉
-
-**GitHub Repository**: https://github.com/nithin-2707/atscribe-ai-resume-analyzer
-
----
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please follow these steps:
@@ -375,7 +332,6 @@ This project is licensed under the MIT License.
 ## 👨‍💻 Author
 
 **Nithin**
-- Location: C:\Users\NITHIN\OneDrive\Documents\capstone
 - Project: ATScribe - AI Resume Analysis Platform
 
 ---
