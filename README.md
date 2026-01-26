@@ -6,14 +6,17 @@
 
 ## 🚀 Live Demo
 
-**Frontend**: https://atscribe-frontend-production.up.railway.app  
-**Backend**: https://atscribe-backend-production.up.railway.app/api/health
+**Frontend**: Coming soon on Vercel  
+**Backend**: Coming soon on Render  
+
+*Follow [RENDER_VERCEL_DEPLOYMENT.md](./RENDER_VERCEL_DEPLOYMENT.md) to deploy your own instance for FREE!*
 
 ## 📌 Quick Links
 
 - [GitHub Repository](https://github.com/nithin-2707/atscribe-ai-resume-analyzer)
 - [Documentation](./PROJECT_OVERVIEW.md)
-- [Deployment Guide](./DEPLOYMENT.md)
+- [Deployment Guide - Render + Vercel](./RENDER_VERCEL_DEPLOYMENT.md)
+- [Quick Deploy Guide](./QUICK_DEPLOY.md)
 
 **Modern MERN Stack Application with AI-Powered Resume Analysis**
 
@@ -61,7 +64,7 @@
 ### Backend
 - **Node.js & Express**: RESTful API server
 - **MongoDB & Mongoose**: Database and ODM
-- **GROQ**: Advanced AI analysis
+- **Groq AI (Llama 3.3)**: Advanced AI analysis
 - **Multer**: File upload handling
 - **PDF-Parse**: Extract text from PDF resumes
 
@@ -311,28 +314,41 @@ The build folder will contain optimized production files.
 
 ## 🚢 Deployment
 
-### 🚀 Live Demo
+### 🚀 Free Forever Deployment
 
-**Coming Soon**: Deployed on Railway
+Deploy ATScribe on **Render (Backend)** + **Vercel (Frontend)** - completely FREE!
 
-### Quick Deploy to Railway
+#### Quick Deploy Steps:
 
-See detailed deployment guide: [`DEPLOYMENT.md`](./DEPLOYMENT.md)
+1. **Push to GitHub**
+   ```bash
+   git add .
+   git commit -m "feat: deploy ATScribe"
+   git push origin main
+   ```
 
-```bash
-# 1. Push to GitHub
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/nithin-2707/atscribe-ai-resume-analyzer.git
-git push -u origin main
+2. **Setup MongoDB Atlas** (Free M0 cluster)
+   - Create account at https://www.mongodb.com/cloud/atlas
+   - Get connection string
 
-# 2. Deploy on Railway
-# Go to https://railway.app
-# Login with GitHub → New Project → Deploy from GitHub
-# Select: atscribe-ai-resume-analyzer
-# Configure backend & frontend services
-```
+3. **Deploy Backend on Render**
+   - Sign up at https://render.com
+   - New Web Service → Connect GitHub repo
+   - Root Directory: `backend`
+   - Add environment variables (MongoDB URI, Groq API key)
+
+4. **Deploy Frontend on Vercel**
+   - Sign up at https://vercel.com
+   - Import Project → Select GitHub repo
+   - Root Directory: `frontend`
+   - Add `REACT_APP_API_URL` environment variable
+
+5. **Update CORS** - Add frontend URL to backend env vars
+
+📖 **Detailed Guide**: See [RENDER_VERCEL_DEPLOYMENT.md](./RENDER_VERCEL_DEPLOYMENT.md)  
+⚡ **Quick Reference**: See [QUICK_DEPLOY.md](./QUICK_DEPLOY.md)
+
+**Total Cost**: $0/month forever! 🎉
 
 **GitHub Repository**: https://github.com/nithin-2707/atscribe-ai-resume-analyzer
 
@@ -366,10 +382,12 @@ This project is licensed under the MIT License.
 
 ## 🙏 Acknowledgments
 
-- **Google Gemini AI** for powerful AI capabilities
+- **Groq AI** for powerful LLM capabilities (Llama 3.3)
 - **React Team** for the amazing frontend library
 - **Framer Motion** for smooth animations
-- **MongoDB** for flexible database solution
+- **MongoDB Atlas** for flexible cloud database
+- **Render** for free backend hosting
+- **Vercel** for lightning-fast frontend deployment
 
 ---
 

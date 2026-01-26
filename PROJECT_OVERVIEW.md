@@ -1061,7 +1061,75 @@ const api = axios.create({
 
 ---
 
-## 📊 Project Statistics
+## � Deployment Architecture
+
+### **Production Stack**
+
+```
+┌──────────────────────────────────────────────────────┐
+│           USERS (Browser)                                  │
+│  https://your-app.vercel.app                             │
+└───────────────────────┬─────────────────────────────┘
+                         │
+                         │ HTTPS
+                         │
+         ┌───────────────┼────────────────┐
+         │               │                │
+         │               │                │
+    ┌────┴────┐      ┌────┴────┐      ┌────┴────┐
+    │  Vercel  │      │ Render  │      │ MongoDB │
+    │ Frontend│      │ Backend │      │  Atlas  │
+    │  (Free) │      │ (Free)  │      │ (Free)  │
+    │         │      │         │      │         │
+    │ React   │────▶│ Express │────▶│ Database│
+    │ SPA     │ API  │ REST API│ Data │ Storage │
+    └─────────┘      │         │      └─────────┘
+                    │    │    │
+                    │    │    │
+                    │    └────┼─────────────────┐
+                    │         │                  │
+                    │         │                  │
+                    │    ┌────┴─────────────────┤
+                    │    │  Groq AI (Llama 3.3)      │
+                    │    │  LLM Analysis (Free)      │
+                    │    └──────────────────────────┘
+                    │
+               ┌────┴────┐
+               │  Multer  │
+               │ PDF Parse│
+               └─────────┘
+```
+
+### **Deployment Platforms**
+
+| Component | Platform | Plan | Cost | Features |
+|-----------|----------|------|------|----------|
+| **Frontend** | Vercel | Hobby | $0/month | • Auto-deploy from GitHub<br>• Global CDN<br>• Instant cache invalidation<br>• 100GB bandwidth |
+| **Backend** | Render | Free | $0/month | • 750 hours/month<br>• Auto-deploy from GitHub<br>• HTTPS included<br>• Sleeps after 15min inactivity |
+| **Database** | MongoDB Atlas | M0 Free | $0/month | • 512MB storage<br>• Shared CPU<br>• Network access control |
+| **AI Model** | Groq | Free Tier | $0/month | • Llama 3.3-70B<br>• Rate limits apply |
+
+**Total Monthly Cost**: **$0.00** 🎉
+
+### **Deployment Workflow**
+
+1. **Code Changes** → Push to GitHub `main` branch
+2. **Automatic Triggers**:
+   - Vercel detects frontend changes → Builds & deploys React app
+   - Render detects backend changes → Builds & deploys Express API
+3. **Zero Downtime** → Both platforms use rolling deployments
+4. **Environment Variables** → Managed securely on each platform
+5. **Monitoring** → Built-in logs and analytics
+
+### **Deployment Guide**
+
+For complete step-by-step instructions, see:
+- 📖 **Full Guide**: [RENDER_VERCEL_DEPLOYMENT.md](./RENDER_VERCEL_DEPLOYMENT.md)
+- ⚡ **Quick Start**: [QUICK_DEPLOY.md](./QUICK_DEPLOY.md)
+
+---
+
+## �📊 Project Statistics
 
 - **Total Files**: 50+ files
 - **Lines of Code**: ~15,000+ lines
@@ -1070,7 +1138,7 @@ const api = axios.create({
 - **Database Collections**: 5 collections
 - **NPM Packages**: 30+ dependencies
 - **Development Time**: Capstone project
-- **AI Model**: Google Gemini 2.0 Flash Exp
+- **AI Model**: Groq AI (Llama 3.3-70B)
 
 ---
 
@@ -1095,9 +1163,10 @@ npm start
 **Backend `.env`**:
 ```env
 PORT=5000
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/
-GEMINI_API_KEY=your_gemini_api_key_here
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/atscribe
+GROQ_API_KEY=your_groq_api_key_here
 NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
 ```
 
 **Frontend `.env`**:
@@ -1141,7 +1210,7 @@ REACT_APP_API_URL=http://localhost:5000/api
 This project demonstrates proficiency in:
 
 ✅ **Full-Stack Development**: MERN stack implementation  
-✅ **AI Integration**: Google Gemini API usage  
+✅ **AI Integration**: Groq AI (Llama 3.3) API usage  
 ✅ **State Management**: React Context + localStorage  
 ✅ **Database Design**: MongoDB schema modeling  
 ✅ **UI/UX Design**: Framer Motion animations  
@@ -1150,6 +1219,8 @@ This project demonstrates proficiency in:
 ✅ **Error Handling**: Comprehensive validation  
 ✅ **Code Organization**: Modular architecture  
 ✅ **Version Control**: Git best practices  
+✅ **Cloud Deployment**: Render + Vercel + MongoDB Atlas  
+✅ **DevOps**: CI/CD with automatic deployments  
 
 ---
 

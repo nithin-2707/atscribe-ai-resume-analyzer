@@ -10,8 +10,16 @@ dotenv.config();
 const app = express();
 // Using Groq API (Llama 3.3-70B) for AI-powered resume analysis
 
+// CORS Configuration for production
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? process.env.FRONTEND_URL || '*'
+    : 'http://localhost:3000',
+  credentials: true,
+  optionsSuccessStatus: 200
+};
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
