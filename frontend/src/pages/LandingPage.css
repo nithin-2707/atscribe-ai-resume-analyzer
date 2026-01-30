@@ -95,8 +95,7 @@ img {
 }
 
 .hero-section.loaded {
-  background-image: radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.15) 0%, transparent 50%), 
-                    url('../../public/images/Group 5.png');
+  background-image: radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.15) 0%, transparent 50%);
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
@@ -427,195 +426,6 @@ img {
   margin-top: 6px;
 }
 
-.landing-content {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  padding: 80px 0 100px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-}
-
-.landing-content::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url('../../public/images/Group 5.png') no-repeat center center;
-  background-size: cover;
-  transform: scaleY(-1);
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.6s ease-in-out;
-  animation: bgFadeIn 1s ease-in-out 0.8s forwards;
-}
-
-@keyframes bgFadeIn {
-  to {
-    opacity: 1;
-  }
-}
-
-.welcome-section {
-  text-align: center;
-  margin-bottom: 70px;
-  opacity: 1;
-  animation: sectionFadeIn 0.8s ease-in-out;
-}
-
-@keyframes sectionFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.welcome-title {
-  font-family: 'Inter', sans-serif;
-  font-size: 3.5rem;
-  font-weight: 500;
-  color: #ffffff;
-  letter-spacing: -0.5px;
-  margin: 0;
-}
-
-.role-cards {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 60px;
-  width: 100%;
-  max-width: 1100px;
-  margin-bottom: 40px;
-  padding: 0 5%;
-}
-
-.role-card {
-  background: rgba(255, 255, 255, 0.10);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(100, 80, 150, 0.3);
-  border-radius: 24px;
-  padding: 45px 40px 40px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 580px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  opacity: 1;
-  animation: cardSlideUp 0.8s ease-in-out backwards;
-}
-
-.role-card:nth-child(1) {
-  animation-delay: 0.2s;
-}
-
-.role-card:nth-child(2) {
-  animation-delay: 0.4s;
-}
-
-@keyframes cardSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.student-card {
-  border-color: rgba(247, 245, 249, 0.1);
-}
-
-.recruiter-card {
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-.card-title {
-  font-family: 'Inter', sans-serif;
-  font-size: 1.75rem;
-  font-weight: 500;
-  margin-bottom: 25px;
-  color: #ffffff;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-  letter-spacing: 0px;
-  width: 100%;
-}
-
-.card-image {
-  width: 100%;
-  height: 350px;
-  border-radius: 16px;
-  overflow: hidden;
-  margin-bottom: 1px;
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  flex-shrink: 0;
-}
-
-.card-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 16px;
-  opacity: 0;
-  animation: imgFadeIn 0.5s ease-in-out 0.3s forwards;
-}
-
-@keyframes imgFadeIn {
-  to {
-    opacity: 1;
-  }
-}
-
-.card-button {
-  width: 85%;
-  max-width: 400px;
-  padding: 15px 45px;
-  font-family: 'Inter', sans-serif;
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  position: relative;
-  z-index: 1;
-  letter-spacing: 0.5px;
-  text-transform: capitalize;
-  margin-top: auto;
-  align-self: center;
-}
-
-.student-button {
-  background: linear-gradient(180deg, #9448C4 0%, #5D2A91 100%);
-}
-
-.recruiter-button {
-  background: linear-gradient(180deg, #9448C4 0%, #5D2A91 100%);
-}
-
 @media (max-width: 1200px) {
   .hero-title {
     font-size: 3.2rem;
@@ -660,16 +470,6 @@ img {
     max-width: 700px;
     height: 500px;
   }
-
-  .welcome-title {
-    font-size: 3rem;
-  }
-
-  .role-cards {
-    grid-template-columns: 1fr;
-    gap: 40px;
-    max-width: 500px;
-  }
 }
 
 @media (max-width: 768px) {
@@ -706,31 +506,5 @@ img {
   .globe-container {
     max-width: 500px;
     height: 400px;
-  }
-
-  .welcome-title {
-    font-size: 2.5rem;
-  }
-
-  .role-cards {
-    gap: 30px;
-  }
-
-  .role-card {
-    padding: 40px 30px;
-    min-height: auto;
-  }
-
-  .card-title {
-    font-size: 1.5rem;
-  }
-
-  .card-image {
-    height: 220px;
-  }
-
-  .card-button {
-    font-size: 1rem;
-    padding: 16px 32px;
   }
 }

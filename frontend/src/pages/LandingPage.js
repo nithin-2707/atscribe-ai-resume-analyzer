@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useApp } from '../context/AppContext';
 import './LandingPage.css';
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const { setUserRole } = useApp();
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [backgroundLoaded, setBackgroundLoaded] = useState(false);
 
@@ -54,56 +52,6 @@ const LandingPage = () => {
     return () => clearTimeout(timeout);
   }, []);
 
-  const handleRoleSelection = (role) => {
-    setUserRole(role);
-    if (role === 'recruiter') {
-      navigate('/recruiter-dashboard');
-    } else {
-      navigate('/dashboard');
-    }
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.5,
-        staggerChildren: 0.3,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: 'easeOut',
-      },
-    },
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.5,
-      },
-    },
-    hover: {
-      scale: 1.05,
-      y: -10,
-      transition: {
-        duration: 0.3,
-      },
-    },
-  };
-
   return (
     <div className="landing-page">
       {/* Loading overlay */}
@@ -129,7 +77,7 @@ const LandingPage = () => {
             className="get-started-btn"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => document.getElementById('role-selection').scrollIntoView({ behavior: 'smooth' })}
+            onClick={() => navigate('/dashboard')}
           >
             Get Started
           </motion.button>
@@ -174,67 +122,6 @@ const LandingPage = () => {
           </div>
         </div>
       </motion.section>
-
-      {/* Role Selection Section */}
-      <motion.div
-        id="role-selection"
-        className="landing-content"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        <motion.div className="welcome-section" variants={itemVariants}>
-          <h2 className="welcome-title">How Would You Like to Continue?</h2>
-        </motion.div>
-
-        <motion.div className="role-cards" variants={itemVariants}>
-          <motion.div
-            className="role-card student-card"
-            variants={cardVariants}
-            whileHover="hover"
-            onClick={() => handleRoleSelection('student')}
-          >
-            <h3 className="card-title">I am a Student</h3>
-            <div className="card-image">
-              <img 
-                src="/images/student-image.png" 
-                alt="Student"
-                loading="lazy"
-              />
-            </div>
-            <motion.button
-              className="card-button student-button"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Continue
-            </motion.button>
-          </motion.div>
-
-          <motion.div
-            className="role-card recruiter-card"
-            variants={cardVariants}
-            whileHover="hover"
-            onClick={() => handleRoleSelection('recruiter')}
-          >
-            <h3 className="card-title">I am a Recruiter</h3>
-            <div className="card-image">
-              <img 
-                src="/images/recruiter-image.png" 
-                alt="Recruiter"
-                loading="lazy"
-              />
-            </div>
-            <motion.button
-              className="card-button recruiter-button"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Continue
-            </motion.button>
-          </motion.div>
-        </motion.div>
-      </motion.div>
     </div>
   );
 };
