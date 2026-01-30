@@ -65,6 +65,11 @@ const LandingPage = () => {
       {/* Hero Section */}
       <motion.section 
         className={`hero-section ${backgroundLoaded ? 'loaded' : 'loading'}`}
+        style={{
+          backgroundImage: backgroundLoaded 
+            ? `radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.15) 0%, transparent 50%), url(${process.env.PUBLIC_URL}/images/Group%205.png)`
+            : 'radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.15) 0%, transparent 50%)'
+        }}
         initial={{ opacity: 0 }}
         animate={{ opacity: backgroundLoaded ? 1 : 0 }}
         transition={{ duration: 0.6 }}
